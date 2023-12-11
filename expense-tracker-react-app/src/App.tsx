@@ -1,23 +1,48 @@
-import { Heading, Center, Grid, GridItem } from "@chakra-ui/react";
+import React, { useState, createContext, useContext } from "react";
+import {
+  ChakraProvider,
+  Box,
+  Flex,
+  Heading,
+  Text,
+  FormControl,
+  FormLabel,
+  Input,
+  Button,
+  Stack,
+} from "@chakra-ui/react";
 
-const App = () => {
+// Create ExpenseTrackerContext
+const ExpenseTrackerContext = createContext();
+
+// ExpenseTrackerProvider component
+function ExpenseTrackerProvider({ children }) {
+  const [transactions, setTransactions] = useState([]);
+  
+  const addExpense = (expense) => {
+    setTransactions([...transactions, expense]);
+  };
+
+  const getTotalIncome = () =>
+    transactions
+      .filter((transaction) => transaction.type === "income")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+  const getTotalExpense = () =>
+    transactions
+      .filter((transaction) => transaction.type === "expense")
+      .reduce((total, transaction) => total + transaction.amount, 0);
+
+  const value = {
+    transactions,
+    addExpense,
+    getTotalIncome,
+    getTotalExpense,
+  };
+
   return (
-    <Center>
-      <Heading mt={10} as="h1" size="xl">
-        Expense Tracker
-        <Heading mt={10} as="h4" size="md">
-          Your Balance <br /> $260
-        </Heading>
-      </Heading>
-      <Grid templateColumns="repeat(5, 1fr)" gap={6}>
-        <GridItem w="100%" h="10" bg="blue.500" />
-        <GridItem w="100%" h="10" bg="blue.500" />
-        <GridItem w="100%" h="10" bg="blue.500" />
-        <GridItem w="100%" h="10" bg="blue.500" />
-        <GridItem w="100%" h="10" bg="blue.500" />
-      </Grid>
-    </Center>
+    <ExpenseTrackerContext.Provider value={value}>
+      {children}
+    </ExpenseTrackerContext.Provider>
   );
-};
-
-export default App;
+}
